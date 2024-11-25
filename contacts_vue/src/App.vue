@@ -3,7 +3,7 @@ import { onMounted } from 'vue';
 import { RouterLink, RouterView } from 'vue-router'
 import 'bootstrap/dist/css/bootstrap.css'
 import { useLogin } from './stores/login.ts';
-
+// todo: add validation
 const login = useLogin()
 
 onMounted(async ()=> {
