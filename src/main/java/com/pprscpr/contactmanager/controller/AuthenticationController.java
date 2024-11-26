@@ -15,8 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class AuthenticationController {
 
-    @Autowired
-    private AuthenticationService service;
+    private final AuthenticationService service;
 
     @PostMapping("/register")
     public ResponseEntity<AuthenticationResponse> register (@RequestBody RegisterRequest request) {

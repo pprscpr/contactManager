@@ -16,10 +16,10 @@ import org.springframework.security.config.Customizer;
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfiguration {
-    @Autowired
-    private JwtAuthenticationFilter jwtAuthFilter;
-    @Autowired
-    private AuthenticationProvider authenticationProvider;
+
+    private final JwtAuthenticationFilter jwtAuthFilter;
+
+    private final AuthenticationProvider authenticationProvider;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {

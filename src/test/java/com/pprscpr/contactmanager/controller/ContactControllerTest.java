@@ -1,6 +1,13 @@
 package com.pprscpr.contactmanager.controller;
 
+import com.fasterxml.jackson.core.ErrorReportConfiguration;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.pprscpr.contactmanager.config.JwtAuthenticationFilter;
+import com.pprscpr.contactmanager.dto.request.AuthenticationRequest;
+import com.pprscpr.contactmanager.dto.request.RegisterRequest;
+import com.pprscpr.contactmanager.dto.response.AuthenticationResponse;
+import com.pprscpr.contactmanager.service.AuthenticationService;
+import com.pprscpr.contactmanager.service.JwtService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import com.pprscpr.contactmanager.model.contact.Contact;
@@ -10,6 +17,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Collections;
@@ -19,23 +28,55 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
+import static org.junit.jupiter.api.Assertions.*;
 // todo: add jwt
 
 @WebMvcTest(ContactController.class)
 public class ContactControllerTest {
 
+
+    @MockBean
+    private JwtAuthenticationFilter jwtAuthFilter;
+
+    @MockBean
+    private AuthenticationProvider authenticationProvider;
+
     @Autowired
     private MockMvc mockMvc;
+
+    @MockBean
+    private AuthenticationService authenticationService;
 
     @MockBean
     private ContactService contactService;
 
     private ObjectMapper objectMapper;
 
+    private String jwtToken;
+
+
     @BeforeEach
     void setUp() {
+        RegisterRequest registerRequest = RegisterRequest.builder()
+                .email("test@test.de")
+                .password("test123")
+                .firstname("Mike")
+                .lastname("Tester")
+                .build();
+
+        AuthenticationResponse mockResponse = new AuthenticationResponse("mocked-jwt-token");
+        when(authenticationService.register(any(RegisterRequest.class))).thenReturn(mockResponse);
+
+        AuthenticationResponse response = authenticationService.register(registerRequest);
+        jwtToken = response.getToken();
         objectMapper = new ObjectMapper();
+    }
+
+    @Test
+    public void testJwt () {
+        System.out.println("token");
+        System.out.println(this.jwtToken);
+        assertTrue(true);
     }
 
     @Test
@@ -46,7 +87,8 @@ public class ContactControllerTest {
 
         when(contactService.getContactById(1L)).thenReturn(contact);
 
-        mockMvc.perform(get("/contact/get_by_id/1"))
+        mockMvc.perform(get("/contact/get_by_id/1")
+                        .header("Authorization", "Bearer mocked-jwt-token"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("success"))
                 .andExpect(jsonPath("$.data.firstName").value("Test Contact"));
