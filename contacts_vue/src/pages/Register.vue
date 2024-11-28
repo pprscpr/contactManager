@@ -26,7 +26,7 @@ function tryRegister () {
                     Register
                 </h2>
             </div>
-            <div class="col-12 mb-3" v-if="true">
+            <div class="col-12 mb-3">
                 <div class="form-floating mb-3">
                     <input 
                         type="email" 
