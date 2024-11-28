@@ -1,7 +1,7 @@
 # contact manager
 ### still in construction
 
-simple contact manager
+simple contact manager with jwt auth
 to learn spring boot framework
 
 ### backend
